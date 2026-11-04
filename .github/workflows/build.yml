@@ -16,10 +16,12 @@ jobs:
           distribution: temurin
           java-version: '21'
 
-      - uses: android-actions/setup-android@v3
-
+      # L'SDK Android è già presente sui runner di GitHub: aggiungo solo la piattaforma.
       - name: Installa la piattaforma Android 36
-        run: sdkmanager "platforms;android-36" "build-tools;36.0.0"
+        run: |
+          SDKM=$(ls -d "$ANDROID_HOME"/cmdline-tools/*/bin/sdkmanager | sort -V | tail -1)
+          yes | "$SDKM" --licenses > /dev/null || true
+          "$SDKM" "platforms;android-36" "build-tools;36.0.0"
 
       - uses: gradle/actions/setup-gradle@v4
 
