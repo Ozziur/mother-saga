@@ -1,0 +1,400 @@
+{
+ "game": "mother1",
+ "title": "Mother 1",
+ "note": "Testi originali scritti per questa app: nessun dialogo del gioco è riprodotto. Nomi dei luoghi come nella patch italiana con impostazioni consigliate (nomi della versione americana).",
+ "melodies": [
+  {
+   "id": 1,
+   "where": "Casa di Ninten",
+   "chapter": "casa",
+   "hints": [
+    "Non serve allontanarsi: la prima nota è più vicina di quanto pensi.",
+    "È al piano di sopra di casa tua, nella stanza dove ti attacca una bambola.",
+    "Dopo averla sconfitta, esamina la bambola: dentro c'è il carillon con la prima melodia."
+   ]
+  },
+  {
+   "id": 2,
+   "where": "Villaggio dei canarini",
+   "chapter": "cimitero",
+   "hints": [
+    "Ti serve un piccolo animale che vendono in città.",
+    "Prendi il pulcino di canarino al negozio di animali dei grandi magazzini di Podunk: se rifiuti di pagare, te lo regalano. Il villaggio è a nord-ovest della città.",
+    "Entra dal muro a sud, vai fino in cima e cerca il passaggio nascosto dietro l'edificio bianco. Usa il pulcino sulla canarina che trovi lì."
+   ]
+  },
+  {
+   "id": 3,
+   "where": "Zoo di Podunk",
+   "chapter": "zoo",
+   "hints": [
+    "Arriva quando risolvi il problema dello zoo.",
+    "Dopo lo scontro con il nemico vicino alla capsula, torna verso le gabbie.",
+    "Esamina il cartello della gabbia della scimmia canterina."
+   ]
+  },
+  {
+   "id": 4,
+   "where": "Casa stregata di Spookane",
+   "chapter": "spookane",
+   "hints": [
+    "La quarta nota è in una casa dove nessuno vive più da tempo.",
+    "Serve la chiave che ti dà una ragazza a sud-est di Spookane.",
+    "Nella villa c'è un pianoforte che suona da solo: avvicinati e ascoltalo."
+   ]
+  },
+  {
+   "id": 5,
+   "where": "Deserto di Yucca",
+   "chapter": "deserto",
+   "hints": [
+    "Nel deserto non tutto ciò che è verde sta zitto.",
+    "Cerca vicino al mucchio di ossa, nella zona sopra cui gira l'aereo.",
+    "Usa la Telepatia sul cactus con la faccia."
+   ]
+  },
+  {
+   "id": 6,
+   "where": "Sotto Magicant",
+   "chapter": "drago",
+   "hints": [
+    "Qualcosa di enorme dorme sotto un posto che conosci già.",
+    "Torna nelle caverne sotto Magicant quando Teddy è nel gruppo, ben preparato.",
+    "Esamina il drago addormentato per svegliarlo, battilo e poi parlagli."
+   ]
+  },
+  {
+   "id": 7,
+   "where": "Mt. Itoi, picco",
+   "chapter": "itoi",
+   "hints": [
+    "Arriva da un amico che conoscerai sulla montagna.",
+    "Dopo lo scontro con il grande robot sul picco, resta qualcosa a terra.",
+    "Esamina i resti di EVE."
+   ]
+  },
+  {
+   "id": 8,
+   "where": "Mt. Itoi, picco",
+   "chapter": "itoi",
+   "hints": [
+    "L'ultima nota è sulla montagna, vicino a dove è nata tutta la storia della tua famiglia.",
+    "Cerca sul picco, non lontano dalla tomba di George.",
+    "Esamina la pietra XX sul picco. Poi dalla tomba di George verrai portato a Magicant."
+   ]
+  }
+ ],
+ "chapters": [
+  {
+   "id": "casa",
+   "title": "Il poltergeist in casa",
+   "area": "Podunk",
+   "goal": "Ferma le stranezze in casa e trova qualcosa di utile in cantina.",
+   "hints": [
+    "Esplora tutta la casa prima di uscire: parla con tutti e controlla le stanze.",
+    "La chiave della cantina non è in casa: chiedi in giro, anche a chi non parla.",
+    "Il cane in giardino ha la chiave: esaminalo. In cantina trovi il diario del bisnonno, una mazza e del pane."
+   ],
+   "tips": [
+    "Lascia uno spazio libero nello zaino prima di uscire.",
+    "Tua sorella minore custodisce gli oggetti che non ti servono.",
+    "Usando il pane ottieni delle briciole: ti riportano nel punto in cui le hai create."
+   ]
+  },
+  {
+   "id": "cimitero",
+   "title": "La bambina scomparsa",
+   "area": "Podunk",
+   "goal": "Ritrova Pippi, la bambina scomparsa, su richiesta del sindaco.",
+   "hints": [
+    "Il sindaco è al municipio, accanto ai grandi magazzini.",
+    "La bambina è al cimitero, a sud-est della città.",
+    "Scendi nella cripta e controlla la bara in basso a sinistra. Rispondi no e poi sì alle sue domande per ottenere il distintivo Franklin."
+   ],
+   "tips": [
+    "Ritira i soldi dal bancomat con la carta e compra una mazza migliore al negozio sportivo.",
+    "Deposita i contanti prima di avventurarti: se cadi in battaglia ne perdi una parte.",
+    "Il distintivo Franklin respinge gli attacchi elettrici: ti servirà presto."
+   ]
+  },
+  {
+   "id": "zoo",
+   "title": "Lo zoo impazzito",
+   "area": "Podunk",
+   "goal": "Scopri cosa fa impazzire gli animali dello zoo.",
+   "hints": [
+    "Riporta Pippi dal sindaco: ti affida un nuovo incarico.",
+    "La chiave dello zoo te la dà l'impiegato del municipio. Se la scimmia te la ruba, puoi chiederne un'altra.",
+    "Raggiungi l'ufficio del direttore e la capsula: lì c'è il responsabile. Attacca normalmente, il distintivo Franklin ti protegge dal suo raggio."
+   ],
+   "tips": [
+    "Nell'ufficio del direttore ci sono una corda, un antidoto, pane e una crema curativa.",
+    "Dopo lo zoo, i poliziotti sul ponte a est ti lasceranno passare."
+   ]
+  },
+  {
+   "id": "magicant",
+   "title": "Magicant",
+   "area": "Magicant",
+   "goal": "Scopri il mondo misterioso e incontra la regina Mary.",
+   "hints": [
+    "Oltre il ponte dei poliziotti c'è una grotta: porta con te il diario del bisnonno.",
+    "In fondo alla grotta usa la Telepatia sulla guglia rosa.",
+    "A Magicant: deposita il diario dal custode, prendi l'ocarina in una casa a est, parla con la regina nel castello a nord (Telepatia sulla guardia centrale)."
+   ],
+   "tips": [
+    "Nel castello puoi aprire un solo regalo: il boomerang in alto a sinistra è il più utile.",
+    "Alla fontana magica puoi ritirare soldi con la Telepatia, ma non depositarli.",
+    "Alcuni nemici qui sono pericolosi: se un incontro va male, scappa.",
+    "Per tornare nel tuo mondo salta nel pozzo giusto, nel campo di pozzi a sud-est."
+   ]
+  },
+  {
+   "id": "caverna",
+   "title": "Le caverne di cristallo",
+   "area": "Sotto Magicant",
+   "goal": "Trova la strada per tornare nel tuo mondo.",
+   "hints": [
+    "Il pozzo ti porta in caverne sotterranee: esplorale.",
+    "Raccogli l'uncino d'onice: ti riporta a Magicant quando vuoi.",
+    "L'uscita porta a un'altra grotta: da lì vai verso nord fino alla città."
+   ],
+   "tips": [
+    "Qui trovi anche una pietra PSI e una spada che per ora nessuno può usare: conservala.",
+    "Il drago che dorme qui sotto lo affronterai molto più avanti."
+   ]
+  },
+  {
+   "id": "merrysville",
+   "title": "Merrysville",
+   "area": "Merrysville",
+   "goal": "Esplora la città e aiuta un ragazzo che si nasconde in un posto strano.",
+   "hints": [
+    "Visita la scuola elementare Twinkle, a sud-est.",
+    "Le scale sono chiuse: passa dalla stanza del bidello al piano terra per salire sul tetto.",
+    "Sul tetto c'è Lloyd: vuole un razzetto, che trovi nella fabbrica a sud della scuola."
+   ],
+   "tips": [
+    "Un uomo tra l'hotel e i grandi magazzini ti regala una scheda telefonica.",
+    "Nella scuola un'infermiera ti cura gratis i PS.",
+    "Attento a una ragazza al secondo piano: ti attacca il raffreddore."
+   ]
+  },
+  {
+   "id": "dolci",
+   "title": "La fabbrica di dolci",
+   "area": "Merrysville",
+   "goal": "Trova un razzetto per Lloyd.",
+   "hints": [
+    "Vai a sud della scuola.",
+    "Il razzetto è in un bidone nella parte ovest della fabbrica.",
+    "Porta il razzetto a Lloyd sul tetto della scuola: si unirà al gruppo."
+   ],
+   "tips": [
+    "Esaminando di nuovo il bidone ottieni altri razzi.",
+    "Lungo la strada più lunga ci sono capsule che aumentano le statistiche."
+   ]
+  },
+  {
+   "id": "duncan",
+   "title": "La fabbrica di Duncan",
+   "area": "A nord di Merrysville",
+   "goal": "Libera i binari bloccati da una frana.",
+   "hints": [
+    "Segui i binari verso nord-ovest e poi a nord.",
+    "All'ingresso serve un lasciapassare: c'è un cane da battere.",
+    "Nella stanza più a ovest c'è un lanciarazzi: esaminalo con un razzo nello zaino. Tieni vivo Lloyd, senza di lui non puoi finire."
+   ],
+   "tips": [
+    "Lo spray potente uccide gli insetti ed è riutilizzabile.",
+    "Le briciole di pane ti fanno uscire in fretta."
+   ]
+  },
+  {
+   "id": "snowman",
+   "title": "Snowman",
+   "area": "Snowman",
+   "goal": "Incontra Ana.",
+   "hints": [
+    "Prendi il treno dalla stazione a nord-est di Merrysville.",
+    "Sul treno una signora ti dà un cappello: appartiene a una ragazza di Snowman.",
+    "La ragazza è nel castello della città: usa il cappello su di lei e conferma il suo nome. Ana si unisce al gruppo."
+   ],
+   "tips": [
+    "Alcuni abitanti hanno il raffreddore: il collutorio lo cura.",
+    "Ad Ana conviene una padella, venduta nel negozio di Snowman.",
+    "Con l'uncino d'onice puoi portare Ana a Magicant per allenarla e comprarle protezioni."
+   ]
+  },
+  {
+   "id": "reindeer",
+   "title": "Reindeer",
+   "area": "Reindeer",
+   "goal": "Aiuta gli abitanti e procurati il necessario per proseguire.",
+   "hints": [
+    "Un vecchio a nord-ovest ha perso qualcosa di molto personale.",
+    "La dentiera è vicino al cartello sopra la città: riportagliela.",
+    "Torna alla stazione con almeno 120 dollari e compra il biglietto per Spookane."
+   ],
+   "tips": [
+    "Ai grandi magazzini c'è un'arma a colpi limitati per Lloyd.",
+    "Un uomo davanti ai magazzini ti offre dei soldi: accetta."
+   ]
+  },
+  {
+   "id": "spookane",
+   "title": "Spookane",
+   "area": "Spookane",
+   "goal": "Entra nella villa stregata a nord della città.",
+   "hints": [
+    "Riposa all'hotel: succede qualcosa di importante.",
+    "Per la villa serve una chiave: te la dà una ragazza nella parte sud-est della città.",
+    "Sali le due rampe a nord e usa la chiave sul portone."
+   ],
+   "tips": [
+    "Dai un distintivo Franklin ad Ana prima di dormire.",
+    "Dopo una notte, l'hotel chiude per sempre.",
+    "La donna dei suggerimenti chiede 1000 dollari: se rifiuti, non la rivedi più."
+   ]
+  },
+  {
+   "id": "villa",
+   "title": "La villa di Rosemary",
+   "area": "Spookane",
+   "goal": "Esplora la villa e trova il pianoforte.",
+   "hints": [
+    "La villa è piena di fantasmi: preparati con cure e PP.",
+    "Esplora i piani fino a trovare la stanza con il pianoforte.",
+    "Il pianoforte suona da solo la quarta melodia."
+   ],
+   "tips": [
+    "Usa le briciole o il Teletrasporto (quando lo avrai) per uscire in fretta."
+   ]
+  },
+  {
+   "id": "deserto",
+   "title": "Il deserto di Yucca",
+   "area": "Deserto",
+   "goal": "Attraversa il deserto.",
+   "hints": [
+    "Dalla stazione di Merrysville segui i binari a est, poi a nord e ancora a est.",
+    "All'oasi ci sono dei giri in aereo: ogni giro dà un biglietto. Il vecchio ne vuole 12 in cambio di un carro armato.",
+    "Con il carro armato raggiungi il robot gigante: battilo e scendi nella buca a nord."
+   ],
+   "tips": [
+    "Libera spazio nello zaino per i biglietti e porta almeno 200 dollari.",
+    "Il robot energetico cura i nemici ed esplode: lascialo per ultimo.",
+    "Il carro armato non subisce danni: attacca finché il robot cade."
+   ]
+  },
+  {
+   "id": "grotta",
+   "title": "La grotta delle scimmie",
+   "area": "Sotto il deserto",
+   "goal": "Trova l'uscita.",
+   "hints": [
+    "Esplora i passaggi a ovest: ci sono pietre PSI.",
+    "L'uscita è una buca nella zona a nord-est.",
+    "Nella grotta successiva passa dal buco nella recinzione: sei a Youngtown."
+   ],
+   "tips": [
+    "Nella grotta successiva c'è anche una guglia rosa che porta a Magicant."
+   ]
+  },
+  {
+   "id": "youngtown",
+   "title": "Youngtown",
+   "area": "Youngtown",
+   "goal": "Scopri cos'è successo agli adulti e impara un nuovo potere.",
+   "hints": [
+    "La città è abitata solo da bambini: parla con tutti.",
+    "In una casa con la porta blu, a sud-ovest, c'è un neonato speciale.",
+    "Usa la Telepatia sul neonato: Ninten e Ana imparano il Teletrasporto."
+   ],
+   "tips": [
+    "Per teletrasportarti corri senza urtare nulla. Non porta a Magicant: per quello c'è l'uncino d'onice.",
+    "Un bambino nella casa del cartello ti cura gratis.",
+    "Il negozio vicino vende un'arma per Lloyd e una padella migliore per Ana."
+   ]
+  },
+  {
+   "id": "palude",
+   "title": "La palude",
+   "area": "A est di Youngtown",
+   "goal": "Attraversa la palude fino a Ellay.",
+   "hints": [
+    "Vai a est dal centro di Youngtown e attraversa i ponti verso nord-est.",
+    "C'è una baracca dove puoi riposare gratis.",
+    "Da lì segui il sentiero a sud e a est, poi a nord, e attraversa l'ultimo ponte a ovest."
+   ],
+   "tips": [
+    "Più a sud i nemici sono più forti: buon posto per salire di livello."
+   ]
+  },
+  {
+   "id": "ellay",
+   "title": "Ellay",
+   "area": "Ellay",
+   "goal": "Entra nel locale dal vivo e conosci Teddy.",
+   "hints": [
+    "Ti serve un biglietto per lo spettacolo, in vendita ai grandi magazzini.",
+    "Paga il vecchio davanti al locale, dai il biglietto alla donna all'ingresso. Non accettare da bere!",
+    "Accetta di salire sul palco. Dopo lo scontro, Teddy ti chiede aiuto: accetta, e prenderà il posto di Lloyd."
+   ],
+   "tips": [
+    "Lo scontro con il capo della banda finisce da solo dopo tre turni.",
+    "I membri della banda in blu a volte lasciano un lanciafiamme riutilizzabile.",
+    "Dalla torre panoramica a nord-ovest c'è un'escursione facoltativa."
+   ]
+  },
+  {
+   "id": "drago",
+   "title": "Il drago",
+   "area": "Sotto Magicant",
+   "goal": "Sveglia il drago che dorme nelle caverne.",
+   "hints": [
+    "Porta Teddy a Magicant con l'uncino d'onice e preparalo bene.",
+    "Dai a Teddy la spada che hai trovato nelle caverne e le protezioni dei negozi di Magicant.",
+    "Esamina il drago (non parlargli) per svegliarlo. Ninten intorno al livello 25 aiuta molto."
+   ],
+   "tips": [
+    "Strategia: Ninten alza difesa e attacco, Ana protegge e cura, Teddy attacca.",
+    "Dopo lo scontro torna a Magicant e teletrasportati a Ellay."
+   ]
+  },
+  {
+   "id": "itoi",
+   "title": "Mt. Itoi",
+   "area": "Mt. Itoi",
+   "goal": "Raggiungi la cima della montagna.",
+   "hints": [
+    "Da Ellay vai a nord-est oltre i ponti: c'è la casa del dottore e l'ingresso della grotta.",
+    "La grotta è un labirinto con le armi migliori del gioco. Sull'altopiano c'è un evento che non puoi vincere: è normale.",
+    "Al lago Lloyd ripara la barca; il gorgo ti porta in un laboratorio dove conosci EVE. Sul picco ottieni le ultime due melodie, poi la regina Mary ti aspetta."
+   ],
+   "tips": [
+    "Compra tanto pane e crema curativa prima di partire.",
+    "Non tornare indietro verso la casa di cura né andare a ovest dal picco con EVE nel gruppo.",
+    "Contro l'avversario finale gli attacchi non servono: proteggi il gruppo, cura e canta."
+   ]
+  }
+ ],
+ "dangers": [
+  {
+   "name": "Scontri difficili",
+   "tip": "Se uno scontro va male, scappa: in Mother 1 la fuga è spesso la scelta migliore, e Ninten può imparare un potere che la rende quasi sicura."
+  },
+  {
+   "name": "Groucho (Magicant)",
+   "tip": "Non attaccarlo: difenditi ogni turno finché se ne va, ottieni più esperienza."
+  },
+  {
+   "name": "Nemici che esplodono",
+   "tip": "Alcuni robot e alberi esplodono quando muoiono: lasciali per ultimi o scappa."
+  },
+  {
+   "name": "Raffreddore",
+   "tip": "Lo prendi parlando con alcuni abitanti: il collutorio lo cura."
+  }
+ ]
+}

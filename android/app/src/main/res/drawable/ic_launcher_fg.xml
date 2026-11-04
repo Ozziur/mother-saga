@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Icona originale: nota musicale su un piccolo pianeta, con una stella. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- pianeta -->
+    <path android:fillColor="#E8B04B" android:pathData="M54,46 m-22,0 a22,22 0 1,0 44,0 a22,22 0 1,0 -44,0" />
+    <path android:fillColor="#C98A2E" android:pathData="M36,58 C44,64 64,64 72,58 C66,68 42,68 36,58 Z" />
+    <!-- anello -->
+    <path android:fillColor="#00000000" android:strokeColor="#F6E7C8" android:strokeWidth="3"
+        android:pathData="M24,52 C30,62 78,62 84,52" />
+    <!-- nota -->
+    <path android:fillColor="#141018" android:pathData="M58,30 L58,50 C56.5,49 54.5,48.6 52.5,49 C48.5,49.8 46,52.8 47,55.6 C48,58.4 52,59.6 56,58.6 C59.4,57.8 62,55.2 62,52.2 L62,38 C66,38.6 69,40.8 70.5,44 C71.5,38 66,32.2 58,30 Z" />
+    <!-- stella -->
+    <path android:fillColor="#F6E7C8" android:pathData="M78,26 L79.6,30.4 L84,32 L79.6,33.6 L78,38 L76.4,33.6 L72,32 L76.4,30.4 Z" />
+</vector>
