@@ -372,7 +372,7 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--accent); ou
   clip-path: path('M15 1 L15 20 C13 19 10.5 18.8 8.4 19.4 C4.4 20.6 2 23.6 3 26.4 C4 29.2 8 30 12 28.8 C15.4 27.8 18 25.2 18 22.2 L18 8 C21.6 8.6 24 10.6 25 13.6 C26 7.8 21.6 2.6 15 1 Z'); }
 .note-mark.spin { animation: pulse 1.2s ease-in-out infinite; }
 #game .pad { margin-top: auto; }
-.screen-wrap { max-width: calc((100dvh - 290px) * 1.5); }
+@media (orientation: portrait) { .screen-wrap { max-width: calc((100dvh - 290px) * 1.5); } }
 .mel-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 12px; }
 .mel { aspect-ratio: 1; border-radius: 12px; border: 1px solid var(--line); background: var(--panel);
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; cursor: pointer; }
@@ -394,3 +394,4 @@ textarea.notes { width: 100%; min-height: 220px; background: var(--panel); color
 .icon.on { color: var(--accent); }
 .badge.static { position: static; }
 .hint-text { color: var(--muted); font-size: 14px; margin: 0 0 8px; }
+@media (orientation: landscape) { .topbar .icon { width: 38px; height: 40px; } .topbar { gap: 0; padding: 4px 4px; } }
