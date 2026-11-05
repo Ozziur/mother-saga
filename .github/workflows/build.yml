@@ -5,6 +5,9 @@ on:
     branches: [main]
   workflow_dispatch:
 
+permissions:
+  contents: write   # per pubblicare le release
+
 jobs:
   apk:
     runs-on: ubuntu-latest
@@ -33,3 +36,19 @@ jobs:
         with:
           name: mother-saga-apk
           path: android/app/build/outputs/apk/release/app-release.apk
+
+      # Ogni versione nuova (versionName in android/app/build.gradle) diventa una release:
+      # l'app la trova da sola e propone l'aggiornamento.
+      - name: Pubblica la release se la versione è nuova
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          VERSION=$(sed -n "s/.*versionName '\(.*\)'.*/\1/p" android/app/build.gradle)
+          if gh release view "v$VERSION" > /dev/null 2>&1; then
+            echo "La release v$VERSION esiste già: niente da pubblicare."
+            exit 0
+          fi
+          cp android/app/build/outputs/apk/release/app-release.apk mother-saga.apk
+          git log -1 --pretty=%B | sed '/^Co-Authored-By:/d;/^Claude-Session:/d' > notes.md
+          gh release create "v$VERSION" mother-saga.apk --title "Mother Saga $VERSION" --notes-file notes.md --target "$GITHUB_SHA"

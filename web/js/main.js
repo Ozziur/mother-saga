@@ -180,6 +180,7 @@ async function enterGame(firstTime = false) {
   }
   await startRun(run);
   if (firstTime) toast('Gioco installato. Buon viaggio!', 2600);
+  setTimeout(() => checkUpdate(), 4000);
 }
 
 async function startRun(run) {
@@ -608,12 +609,124 @@ async function statesView(body) {
   });
 }
 
+// ---------------------------------------------------------------- aggiornamenti
+// Le nuove versioni sono le release pubbliche del repository su GitHub.
+
+const REPO = 'Ozziur/mother-saga';
+const CHECK_EVERY = 6 * 3600 * 1000;
+
+const appVersion = () => (isAndroid() ? window.AndroidBridge.version() : 'web');
+
+function cmpVer(a, b) {
+  const pa = String(a).replace(/^v/, '').split('.').map(Number);
+  const pb = String(b).replace(/^v/, '').split('.').map(Number);
+  for (let i = 0; i < Math.max(pa.length, pb.length); i++) {
+    const d = (pa[i] || 0) - (pb[i] || 0);
+    if (d) return d;
+  }
+  return 0;
+}
+
+/** Controlla l'ultima release. Silenzioso, salvo `force` (pulsante nel menu). */
+async function checkUpdate({ force = false } = {}) {
+  if (!isAndroid()) return null;
+  const last = (await kv.get('update-check')) || {};
+  if (!force && last.at && Date.now() - last.at < CHECK_EVERY) return setUpdate(last.found);
+  try {
+    const res = await fetch(`https://api.github.com/repos/${REPO}/releases/latest`, { headers: { Accept: 'application/vnd.github+json' }, cache: 'no-store' });
+    if (res.status === 404) {
+      await kv.set('update-check', { at: Date.now(), found: null });
+      return setUpdate(null);
+    }
+    if (!res.ok) throw new Error(`GitHub ha risposto ${res.status}`);
+    const r = await res.json();
+    const asset = (r.assets || []).find((a) => /\.apk$/i.test(a.name));
+    const version = String(r.tag_name || '').replace(/^v/, '');
+    const found = asset && cmpVer(version, appVersion()) > 0 ? { version, url: asset.browser_download_url, size: asset.size, notes: r.body || '' } : null;
+    await kv.set('update-check', { at: Date.now(), found });
+    return setUpdate(found, !force);
+  } catch (e) {
+    if (force) throw e;
+    return null;
+  }
+}
+
+function setUpdate(found, announce = false) {
+  const was = app.update?.version;
+  app.update = found || null;
+  $('[data-action="menu"]').classList.toggle('dot', !!found);
+  if (found && announce && was !== found.version) toast(`Nuova versione ${found.version} disponibile: aprila dal menu`, 3200);
+  return found;
+}
+
+function notesHtml(text) {
+  const lines = String(text)
+    .split('\n')
+    .map((l) => l.trim())
+    .filter((l) => l && !/^(Co-Authored-By|Claude-Session):/i.test(l))
+    .slice(0, 8);
+  return lines.map((l) => `<div>${esc(l.replace(/^[-*]\s*/, '• '))}</div>`).join('');
+}
+
+function updateCardHtml() {
+  const u = app.update;
+  if (!u) return '';
+  const mb = u.size ? ` · ${(u.size / 1048576).toFixed(1)} MB` : '';
+  return `<div class="card update"><b>Versione ${esc(u.version)} disponibile</b><br><small>Hai la ${esc(appVersion())}${mb}</small>
+    <div class="notes-list">${notesHtml(u.notes)}</div>
+    <div class="progress" id="upd-progress" hidden><div class="bar"></div></div>
+    <button class="btn primary block" id="btn-update">Scarica e installa</button>
+    <p class="hint" style="margin:8px 0 0">Partite e salvataggi restano. Android ti chiederà di confermare l'installazione.</p></div>`;
+}
+
+function bindUpdate(body) {
+  $('#btn-update', body)?.addEventListener('click', async (e) => {
+    e.currentTarget.classList.add('disabled');
+    e.currentTarget.textContent = 'Scarico…';
+    $('#upd-progress', body).hidden = false;
+    await app.emu.flush(); // l'installazione chiude l'app: prima salvo tutto
+    window.AndroidBridge.installUpdate(app.update.url);
+  });
+  $('#btn-check', body)?.addEventListener('click', async (e) => {
+    e.currentTarget.classList.add('disabled');
+    e.currentTarget.textContent = 'Controllo…';
+    try {
+      const u = await checkUpdate({ force: true });
+      if (!u) toast('Hai già l’ultima versione');
+    } catch (err) {
+      toast(`Controllo non riuscito: ${err.message}`);
+    }
+    render();
+  });
+}
+
+window.onUpdateProgress = (f) => {
+  const bar = $('#upd-progress .bar');
+  if (bar) bar.style.width = `${Math.round(f * 100)}%`;
+  if (f >= 1) {
+    const b = $('#btn-update');
+    if (b) b.textContent = 'Apro l’installazione…';
+  }
+};
+window.onUpdateNeedsPermission = () => {
+  toast('Consenti a Mother Saga di installare app, poi torna qui: l’aggiornamento riparte da solo', 5000);
+};
+window.onUpdateError = (msg) => {
+  toast(`Aggiornamento non riuscito: ${msg}`, 4000);
+  const b = $('#btn-update');
+  if (b) {
+    b.classList.remove('disabled');
+    b.textContent = 'Riprova';
+  }
+};
+
 // ---------------------------------------------------------------- menu
 
 async function menuView(body) {
   const runs = await listRuns();
   const install = (await kv.get('install')) || {};
   body.innerHTML = `
+    ${updateCardHtml()}
     <div class="section-title">Partite</div>
     <div class="list">${runs
       .map((r) => `<div class="item" data-run="${r.id}"><div class="main"><b>${esc(r.name)}</b><small>${new Date(r.updated).toLocaleDateString('it-IT')}</small></div>
@@ -635,7 +748,12 @@ async function menuView(body) {
     <div class="section-title">Gioco installato</div>
     <div class="card"><b>${esc(install.label || 'Mother 1+2')}</b><br><small>CRC ${esc(install.crc || '?')}${install.patch ? ` · patch ${esc(install.patch)}` : ''}</small></div>
     <button class="btn block danger" id="btn-reinstall">Cambia ROM</button>
-    <p class="hint">Mother Saga ${esc(window.AndroidBridge?.version?.() || 'web')} · la guida è scritta per questa app e non contiene testi del gioco.</p>`;
+
+    <div class="section-title">App</div>
+    ${isAndroid() && !app.update ? '<button class="btn block" id="btn-check">Cerca aggiornamenti</button>' : ''}
+    <p class="hint">Mother Saga ${esc(appVersion())} · la guida è scritta per questa app e non contiene testi del gioco.</p>`;
+
+  bindUpdate(body);
 
   on(body, '[data-run]', 'click', (e, el) => pushView('Partita', (b) => runView(b, el.dataset.run)));
   $('#btn-new', body).addEventListener('click', () => pushView('Nuova partita', newRunView));

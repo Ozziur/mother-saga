@@ -395,3 +395,9 @@ textarea.notes { width: 100%; min-height: 220px; background: var(--panel); color
 .badge.static { position: static; }
 .hint-text { color: var(--muted); font-size: 14px; margin: 0 0 8px; }
 @media (orientation: landscape) { .topbar .icon { width: 38px; height: 40px; } .topbar { gap: 0; padding: 4px 4px; } }
+
+.icon.dot::after { content: ''; position: absolute; top: 9px; right: 9px; width: 9px; height: 9px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 2px var(--bg); }
+.card.update { border: 1px solid var(--accent); }
+.card.update .notes-list { margin: 8px 0 10px; font-size: 14px; color: var(--muted); display: flex; flex-direction: column; gap: 2px; }
+.card.update .progress { margin-bottom: 10px; }
+input[type=range] { accent-color: var(--accent); }

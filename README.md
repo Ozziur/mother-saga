@@ -39,6 +39,10 @@ cd android
 
 L'APK è firmato con la chiave in `android/keystore/`, così ogni build si installa sopra la precedente senza perdere i dati.
 
+## Aggiornamenti
+
+Quando cambia `versionName` in `android/app/build.gradle`, il workflow pubblica una release `vX.Y.Z` con l'APK (`mother-saga.apk`) e le note prese dal messaggio del commit. L'app controlla l'ultima release all'avvio (al massimo ogni 6 ore, o con *Menu → Cerca aggiornamenti*), la scarica e apre l'installazione di Android, che chiede sempre conferma. Il repository deve essere pubblico perché il telefono possa leggere le release.
+
 ## Prossimi passi (Fase 2)
 
 Lettura della memoria del gioco per segnare da sole melodie e progressi, e aiuti anti-grind opzionali (esperienza e soldi moltiplicati, meno incontri casuali).

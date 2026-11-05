@@ -2,6 +2,13 @@ package net.ozziur.mother;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.provider.Settings;
+import androidx.core.content.FileProvider;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -50,6 +57,8 @@ public class MainActivity extends ComponentActivity {
     private ValueCallback<Uri[]> pendingFileCallback;
     private byte[] pendingExport;
     private Vibrator vibrator;
+    private File pendingUpdate;      // APK scaricato in attesa del permesso di installazione
+    private boolean downloading;
 
     private final ActivityResultLauncher<String[]> openDocument =
             registerForActivityResult(new ActivityResultContracts.OpenDocument(), uri -> {
@@ -175,11 +184,89 @@ public class MainActivity extends ComponentActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        if (pendingUpdate != null && getPackageManager().canRequestPackageInstalls()) {
+            File f = pendingUpdate;
+            pendingUpdate = null;
+            launchInstaller(f);
+        }
         callJs("window.onAndroidResume && window.onAndroidResume()");
     }
 
     private void callJs(String code) {
         if (webView != null) webView.post(() -> webView.evaluateJavascript(code, null));
+    }
+
+    // ---------------------------------------------------------------- aggiornamenti
+
+    private String versionName() {
+        try {
+            PackageInfo pi = getPackageManager().getPackageInfo(getPackageName(), 0);
+            return pi.versionName;
+        } catch (Exception e) {
+            return "?";
+        }
+    }
+
+    /** Scarica l'APK in background e lo passa all'installer di sistema. */
+    private void downloadUpdate(String url) {
+        if (downloading) return;
+        downloading = true;
+        new Thread(() -> {
+            File dir = new File(getCacheDir(), "updates");
+            File out = new File(dir, "update.apk");
+            try {
+                dir.mkdirs();
+                if (out.exists()) out.delete();
+                HttpURLConnection c = (HttpURLConnection) new URL(url).openConnection();
+                c.setInstanceFollowRedirects(true);
+                c.setRequestProperty("User-Agent", "MotherSaga-Updater");
+                c.setConnectTimeout(15000);
+                c.setReadTimeout(30000);
+                int code = c.getResponseCode();
+                if (code != 200) throw new IOException("HTTP " + code);
+                long total = c.getContentLengthLong();
+                long got = 0;
+                long lastReport = 0;
+                try (InputStream in = c.getInputStream(); OutputStream os = new FileOutputStream(out)) {
+                    byte[] buf = new byte[64 * 1024];
+                    int n;
+                    while ((n = in.read(buf)) > 0) {
+                        os.write(buf, 0, n);
+                        got += n;
+                        if (total > 0 && got - lastReport > 256 * 1024) {
+                            lastReport = got;
+                            callJs("window.onUpdateProgress && window.onUpdateProgress(" + ((double) got / total) + ")");
+                        }
+                    }
+                }
+                c.disconnect();
+                callJs("window.onUpdateProgress && window.onUpdateProgress(1)");
+                runOnUiThread(() -> {
+                    if (getPackageManager().canRequestPackageInstalls()) {
+                        launchInstaller(out);
+                    } else {
+                        // La prima volta Android chiede di consentire le installazioni da questa app.
+                        pendingUpdate = out;
+                        callJs("window.onUpdateNeedsPermission && window.onUpdateNeedsPermission()");
+                        startActivity(new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES,
+                                Uri.parse("package:" + getPackageName())));
+                    }
+                });
+            } catch (Exception e) {
+                String msg = String.valueOf(e.getMessage()).replace("\\", "").replace("'", " ");
+                callJs("window.onUpdateError && window.onUpdateError('" + msg + "')");
+            } finally {
+                downloading = false;
+            }
+        }).start();
+    }
+
+    private void launchInstaller(File apk) {
+        Uri uri = FileProvider.getUriForFile(this, getPackageName() + ".updates", apk);
+        Intent i = new Intent(Intent.ACTION_VIEW);
+        i.setDataAndType(uri, "application/vnd.android.package-archive");
+        i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(i);
     }
 
     /** Funzioni native chiamabili dalla pagina come window.AndroidBridge.*. */
@@ -222,7 +309,17 @@ public class MainActivity extends ComponentActivity {
 
         @JavascriptInterface
         public String version() {
-            return "0.11.1";
+            return versionName();
+        }
+
+        /** Scarica e installa l'aggiornamento. L'installazione chiede sempre conferma all'utente. */
+        @JavascriptInterface
+        public void installUpdate(String url) {
+            if (url == null || !url.startsWith("https://github.com/Ozziur/mother-saga/releases/download/")) {
+                callJs("window.onUpdateError && window.onUpdateError('indirizzo non valido')");
+                return;
+            }
+            downloadUpdate(url);
         }
     }
 
