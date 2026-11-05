@@ -3,6 +3,8 @@ import { Emulator } from './emulator.js';
 import { setupControls, hapticConfig } from './controls.js';
 import { kv, requestPersistence } from './storage.js';
 import * as P from './patcher.js';
+import { Live } from './live.js';
+import * as AID from './aids.js';
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
@@ -187,10 +189,33 @@ async function startRun(run) {
   if (app.emu.running) return switchRun(run.id);
   app.run = run;
   await kv.set('active-run', run.id);
-  await app.emu.start(run.id, { rewind: true, volume: app.settings.volume });
+  run.aids ??= { ...AID.DEFAULT_AIDS };
+  await app.emu.start(run.id, { rewind: true, volume: app.settings.volume, patch: (rom) => {
+      app.aidsOk = AID.aidsSupported(rom);
+      return AID.applyAids(rom, run.aids);
+    } });
   app.emu.setSpeed(1);
   updateSpeedBadge();
   updateMelodyChip();
+  app.live = new Live(app.emu, { onMelody: onGameMelody, onUpdate: onGameUpdate });
+  app.live.start();
+}
+
+// ---------------------------------------------------------------- dal gioco
+
+/** Il gioco è la fonte di verità per le melodie: le segno da solo. */
+async function onGameUpdate(s) {
+  app.liveState = s;
+  const cur = app.run.melodies.join(',');
+  if (s.melodies.join(',') !== cur) {
+    app.run.melodies = s.melodies;
+    await persistRun();
+  }
+  if (!$('#sheet').hidden && sheet.tab === 'gruppo' && sheet.stack.length === 1) render();
+}
+
+function onGameMelody(ids) {
+  for (const id of ids) toast(`♪ Melodia ${id} imparata!`, 2600);
 }
 
 /** Il core carica un solo gioco per sessione: per cambiare partita salva tutto e ricarica la pagina. */
@@ -251,6 +276,7 @@ function updateSpeedBadge() {
 function updateMelodyChip() {
   const n = app.run?.melodies.length || 0;
   $('#mel-chip').textContent = `♪ ${n}/8`;
+  $('#mel-chip').title = app.liveState?.inGame ? 'Melodie lette dal gioco' : 'Melodie trovate';
   $('#mel-chip').classList.toggle('warn', n === 8);
 }
 
@@ -422,6 +448,7 @@ function on(root, sel, ev, fn) {
 const GUIDE_TABS = [
   ['cammino', 'Dove andare'],
   ['melodie', 'Melodie'],
+  ['gruppo', 'Gruppo'],
   ['consigli', 'Consigli'],
   ['note', 'Note'],
 ];
@@ -431,7 +458,7 @@ function openGuide(tab) {
 }
 
 function guideView(body) {
-  ({ cammino: pathView, melodie: melodiesView, consigli: tipsView, note: notesView })[sheet.tab](body);
+  ({ cammino: pathView, melodie: melodiesView, gruppo: partyView, consigli: tipsView, note: notesView })[sheet.tab](body);
 }
 
 const revealed = (key) => app.run.revealed[key] || 0;
@@ -503,7 +530,7 @@ function melodiesView(body) {
     <div class="mel-grid">${app.guide.melodies
       .map((m) => `<div class="mel ${got.has(m.id) ? 'got' : ''}" data-mel="${m.id}"><b>♪${m.id}</b><small>${got.has(m.id) ? 'Trovata' : '?'}</small></div>`)
       .join('')}</div>
-    <p class="hint">Tocca una nota per segnarla o per vedere dove cercarla. Il luogo resta nascosto finché non chiedi un suggerimento.</p>`;
+    <p class="hint">${app.liveState?.inGame ? 'Le melodie si segnano da sole quando le impari nel gioco.' : 'Tocca una nota per segnarla o per vedere dove cercarla.'} Il luogo resta nascosto finché non chiedi un suggerimento.</p>`;
   on(body, '[data-mel]', 'click', (e, el) => pushView(`Melodia ${el.dataset.mel}`, (b) => melodyView(b, Number(el.dataset.mel))));
 }
 
@@ -526,6 +553,26 @@ function melodyView(body, id) {
     if (!got) toast(app.run.melodies.length === 8 ? 'Tutte e otto le melodie!' : `Melodia ${id} trovata`);
     popView();
   });
+}
+
+function partyView(body) {
+  const s = app.liveState;
+  if (!s?.inGame) {
+    body.innerHTML = `<p class="hint">Qui compaiono livello, PS e PP del gruppo, letti direttamente dal gioco. Si aggiorna appena Ninten è in giro per il mondo.</p>`;
+    return;
+  }
+  const bar = (v, max) => `<span class="meter"><span style="width:${max ? Math.min(100, Math.round((v / max) * 100)) : 0}%"></span></span>`;
+  body.innerHTML = `
+    <div class="list">${s.party
+      .map((c) => `<div class="card member"><div class="row"><b style="flex:1">${esc(c.name || c.who)}</b><small>Liv. ${c.level}</small></div>
+        <div class="stat"><small>PS</small>${bar(c.hp, c.maxHp)}<small>${c.hp}/${c.maxHp}</small></div>
+        ${c.maxPp ? `<div class="stat"><small>PP</small>${bar(c.pp, c.maxPp)}<small>${c.pp}/${c.maxPp}</small></div>` : ''}
+        <small>Esperienza ${c.exp.toLocaleString('it-IT')}</small></div>`)
+      .join('')}</div>
+    <div class="card"><div class="row"><span style="flex:1">Contanti</span><b>${s.money.toLocaleString('it-IT')} $</b></div>
+      <div class="row"><span style="flex:1">In banca</span><b>${s.bank.toLocaleString('it-IT')} $</b></div></div>
+    <div class="card"><div class="row"><span style="flex:1">Aiuti della partita</span><small>${esc(AID.aidsSummary(app.run.aids))}</small></div>
+      ${s.easyRing ? '<small>Ninten indossa l’anello facile del gioco: esperienza ×4, soldi ×2 e meno incontri anche senza aiuti.</small>' : ''}</div>`;
 }
 
 function tipsView(body) {
@@ -584,6 +631,7 @@ async function statesView(body) {
   });
   on(body, '[data-load]', 'click', async (e, el) => {
     if (await app.emu.loadState(Number(el.dataset.load))) {
+      app.live?.reset();
       closeSheet();
       toast(`Caricato slot ${el.dataset.load}`);
     } else toast('Caricamento non riuscito');
@@ -800,10 +848,21 @@ async function runView(body, id) {
     <div class="card"><b style="font-size:18px">${esc(run.name)}</b><br>
       <small>${run.melodies.length}/8 melodie · ${run.chapters.length}/${app.guide.chapters.length} capitoli</small></div>
     ${active ? '' : '<button class="btn primary block" id="btn-play">Gioca questa partita</button>'}
+    ${aidsHtml(run.aids)}
     <div class="section-title">Nome</div>
     <div class="row"><input id="run-name" value="${esc(run.name)}" style="flex:1;min-height:44px;padding:0 12px;border-radius:12px;border:1px solid var(--line);background:var(--panel);color:var(--text);font:inherit"><button class="btn" id="btn-rename">Salva</button></div>
     ${active ? '' : '<button class="btn danger block" id="btn-del" style="margin-top:16px">Elimina partita</button>'}`;
   $('#btn-play', body)?.addEventListener('click', () => switchRun(id));
+  bindAids(body, run.aids, async (aids) => {
+    if (active && !confirm('Per applicare gli aiuti il gioco ripartisce da dove sei ora. Procedo?')) return render();
+    run.aids = aids;
+    await saveRun(run);
+    if (active) {
+      app.run.aids = aids;
+      return switchRun(id);
+    }
+    render();
+  });
   $('#btn-rename', body).addEventListener('click', async () => {
     run.name = $('#run-name', body).value.trim() || run.name;
     await saveRun(run);
@@ -818,16 +877,43 @@ async function runView(body, id) {
   });
 }
 
+const draft = { ...AID.DEFAULT_AIDS };
 function newRunView(body) {
   body.innerHTML = `
     <div class="section-title">Nome della partita</div>
     <input id="new-name" value="Partita ${new Date().toLocaleDateString('it-IT')}" style="width:100%;min-height:44px;padding:0 12px;border-radius:12px;border:1px solid var(--line);background:var(--panel);color:var(--text);font:inherit">
     <p class="hint">Ogni partita ha il suo salvataggio, i suoi stati rapidi, le sue note e i suoi progressi nella guida.</p>
-    <button class="btn primary block" id="btn-create">Crea e gioca</button>`;
+    ${aidsHtml(draft)}
+    <button class="btn primary block" id="btn-create" style="margin-top:12px">Crea e gioca</button>`;
+  bindAids(body, draft, (aids) => {
+    Object.assign(draft, aids);
+    render();
+  });
   $('#btn-create', body).addEventListener('click', async () => {
     const run = await createRun($('#new-name', body).value.trim());
+    run.aids = { ...draft };
+    await saveRun(run);
     await switchRun(run.id);
   });
+}
+
+// ---------------------------------------------------------------- aiuti
+
+function aidsHtml(aids) {
+  const a = { ...AID.DEFAULT_AIDS, ...(aids || {}) };
+  if (app.aidsOk === false) return '<div class="section-title">Aiuti anti-grind</div><p class="hint">Non disponibili con questa ROM: servono Mother 1+2 con la patch italiana 1.1.1.</p>';
+  return `<div class="section-title">Aiuti anti-grind</div>
+    <p class="hint" style="margin-top:0">Valgono solo per questa partita. Lasciali su Normale per giocare come l’originale.</p>
+    <small>Esperienza</small>${segHtml('aid-exp', String(a.exp), AID.EXP_OPTIONS)}
+    <small>Soldi guadagnati</small>${segHtml('aid-money', String(a.money), AID.MONEY_OPTIONS)}
+    <small>Incontri casuali</small>${segHtml('aid-enc', a.enc, AID.ENC_OPTIONS)}`;
+}
+
+function bindAids(body, aids, onChange) {
+  const a = { ...AID.DEFAULT_AIDS, ...(aids || {}) };
+  for (const [seg, key, num] of [['aid-exp', 'exp', true], ['aid-money', 'money', true], ['aid-enc', 'enc', false]]) {
+    on(body, `[data-seg="${seg}"] button`, 'click', (e, el) => onChange({ ...a, [key]: num ? Number(el.dataset.v) : el.dataset.v }));
+  }
 }
 
 // ---------------------------------------------------------------- file

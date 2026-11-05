@@ -401,3 +401,10 @@ textarea.notes { width: 100%; min-height: 220px; background: var(--panel); color
 .card.update .notes-list { margin: 8px 0 10px; font-size: 14px; color: var(--muted); display: flex; flex-direction: column; gap: 2px; }
 .card.update .progress { margin-bottom: 10px; }
 input[type=range] { accent-color: var(--accent); }
+
+.sheet-body > small { display: block; margin: 12px 4px 6px; }
+.card.member { display: flex; flex-direction: column; gap: 6px; }
+.card.member .stat { display: grid; grid-template-columns: 26px 1fr 64px; align-items: center; gap: 8px; }
+.card.member .stat small:last-child { text-align: right; }
+.meter { height: 8px; background: var(--panel-2); border-radius: 99px; overflow: hidden; display: block; }
+.meter span { display: block; height: 100%; background: var(--accent); border-radius: 99px; }

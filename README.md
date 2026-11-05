@@ -43,6 +43,8 @@ L'APK è firmato con la chiave in `android/keystore/`, così ogni build si insta
 
 Quando cambia `versionName` in `android/app/build.gradle`, il workflow pubblica una release `vX.Y.Z` con l'APK (`mother-saga.apk`) e le note prese dal messaggio del commit. L'app controlla l'ultima release all'avvio (al massimo ogni 6 ore, o con *Menu → Cerca aggiornamenti*), la scarica e apre l'installazione di Android, che chiede sempre conferma. Il repository deve essere pubblico perché il telefono possa leggere le release.
 
-## Prossimi passi (Fase 2)
+## Lettura del gioco e aiuti (Fase 2)
 
-Lettura della memoria del gioco per segnare da sole melodie e progressi, e aiuti anti-grind opzionali (esperienza e soldi moltiplicati, meno incontri casuali).
+- `web/js/memory.js` trova IWRAM ed EWRAM del GBA nella memoria del core (partendo da uno stato salvato) e le legge in tempo reale.
+- `web/js/live.js` legge una volta al secondo gruppo, livelli, PS/PP, soldi e melodie. Mother 1 su GBA tiene i dati della partita come la RAM NES: `$xxxx` NES = `$xxxx + 0x02FFBD90` GBA (melodie a `0x030033AE`, un bit per nota; soldi a `0x030031A0`; personaggio *k* a `0x03003190 + 0x40·k`). Verificati sulla ROM italiana 1.1.1 con la schermata di stato.
+- `web/js/aids.js` rende sempre attivo e regolabile il codice dell'*anello facile* presente nella traduzione (esperienza, soldi, tabella degli incontri), modificando 16 byte della copia della ROM caricata. Si attiva solo se trova i byte originali attesi.

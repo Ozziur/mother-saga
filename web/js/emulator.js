@@ -134,10 +134,11 @@ export class Emulator {
   // ---------- ciclo di vita ----------
 
   /** Avvia una run. Il core non può cambiare gioco: per cambiare run si ricarica la pagina. */
-  async start(runId, { rewind = false, volume = 1 } = {}) {
+  async start(runId, { rewind = false, volume = 1, patch = null } = {}) {
     if (this.running) throw new Error('Emulatore già avviato');
-    const rom = await kv.get('rom-patched');
+    let rom = await kv.get('rom-patched');
     if (!rom) throw new Error('Gioco non installato.');
+    if (patch) rom = patch(rom); // modifiche della partita (aiuti), solo sulla copia caricata
     this.runId = runId;
     this.rewindEnabled = rewind;
     this._write('/home/web_user/.config/retroarch/retroarch.cfg', RETROARCH_CFG(rewind));
